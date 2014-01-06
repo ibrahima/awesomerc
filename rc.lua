@@ -25,6 +25,8 @@ local menubar = require("menubar")
 require("debian.menu")
 require("vicious")
 
+awful.util.spawn_with_shell("compton -cfb")
+
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
 -- another config (This code will only ever execute for the fallback config)
@@ -188,6 +190,16 @@ memwidget = wibox.widget.textbox()
 vicious.cache(vicious.widgets.mem)
 vicious.register(memwidget, vicious.widgets.mem, "$1 ($2MB/$3MB)", 13)
 
+freq0 = wibox.widget.textbox()
+-- vicious.cache(vicious.widgets.cpufreq)
+vicious.register(freq0, vicious.widgets.cpufreq, "$1|",7, "cpu0")
+freq1 = wibox.widget.textbox()
+vicious.register(freq1, vicious.widgets.cpufreq, "$1|",7, "cpu1")
+freq2 = wibox.widget.textbox()
+vicious.register(freq2, vicious.widgets.cpufreq, "$1|",7, "cpu2")
+freq3 = wibox.widget.textbox()
+vicious.register(freq3, vicious.widgets.cpufreq, "$1$5",7, "cpu3")
+
 -- Initialize widget
 separator = wibox.widget.textbox()
 separator:set_text("::");
@@ -212,7 +224,10 @@ batwidget1:set_color({ type = "linear", from = { 0, 0 }, to = { 0, 10 },
                        stops = { { 0, "#AECF96" }, { 0.5, "#88A175" }, { 1, "#FF5656" }} })
 vicious.register(batwidget1, vicious.widgets.bat, "$2", 61, "BAT1")
 
-
+battime0 = wibox.widget.textbox()
+battime1 = wibox.widget.textbox()
+vicious.register(battime0, vicious.widgets.bat, "($3)$1", 61, "BAT0")
+vicious.register(battime1, vicious.widgets.bat, "($3)$1", 61, "BAT1")
 -- {{{ Volume level
 volicon = wibox.widget.imagebox() --widget({ type = "imagebox" })
 volicon:set_image(beautiful.widget_vol)
@@ -280,11 +295,19 @@ for s = 1, screen.count() do
     -- right_layout:add(volicon)
     right_layout:add(separator)
     right_layout:add(netwidget)
+    right_layout:add(separator)
     -- right_layout:add(memwidget)
     right_layout:add(cpuwidget)
+    right_layout:add(freq0)
+    right_layout:add(freq1)
+    right_layout:add(freq2)
+    right_layout:add(freq3)
     right_layout:add(separator)
     right_layout:add(batwidget0)
+    right_layout:add(battime0)
     right_layout:add(batwidget1)
+    right_layout:add(battime1)
+    right_layout:add(separator)
     if s == 1 then right_layout:add(wibox.widget.systray()) end
     right_layout:add(mytextclock)
     right_layout:add(mylayoutbox[s])
