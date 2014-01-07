@@ -203,31 +203,6 @@ vicious.register(freq3, vicious.widgets.cpufreq, "$1$5",7, "cpu3")
 -- Initialize widget
 separator = wibox.widget.textbox()
 separator:set_text("::");
-
-batwidget0 = awful.widget.progressbar()
-batwidget0:set_width(8)
-batwidget0:set_height(10)
-batwidget0:set_vertical(true)
-batwidget0:set_background_color("#494B4F")
-batwidget0:set_border_color(nil)
-batwidget0:set_color({ type = "linear", from = { 0, 0 }, to = { 0, 10 },
-                       stops = { { 0, "#AECF96" }, { 0.5, "#88A175" }, { 1, "#FF5656" }} })
-vicious.register(batwidget0, vicious.widgets.bat, "$2", 61, "BAT0")
-
-batwidget1 = awful.widget.progressbar()
-batwidget1:set_width(8)
-batwidget1:set_height(10)
-batwidget1:set_vertical(true)
-batwidget1:set_background_color("#494B4F")
-batwidget1:set_border_color(nil)
-batwidget1:set_color({ type = "linear", from = { 0, 0 }, to = { 0, 10 },
-                       stops = { { 0, "#AECF96" }, { 0.5, "#88A175" }, { 1, "#FF5656" }} })
-vicious.register(batwidget1, vicious.widgets.bat, "$2", 61, "BAT1")
-
-battime0 = wibox.widget.textbox()
-battime1 = wibox.widget.textbox()
-vicious.register(battime0, vicious.widgets.bat, "($3)$1", 61, "BAT0")
-vicious.register(battime1, vicious.widgets.bat, "($3)$1", 61, "BAT1")
 -- {{{ Volume level
 volicon = wibox.widget.imagebox() --widget({ type = "imagebox" })
 volicon:set_image(beautiful.widget_vol)
@@ -260,7 +235,7 @@ vicious.register(volwidget, vicious.widgets.volume, " $1%", 2, "PCM")
 -- Initialize widget, use widget({ type = "textbox" }) for awesome < 3.5
 netwidget = wibox.widget.textbox()
  -- Register widget
-vicious.register(netwidget, vicious.widgets.net, '<span color="#CC9393">${wlan0 down_kb}</span> <span color="#7F9F7F">${wlan0 up_kb}</span>', 3)
+vicious.register(netwidget, vicious.widgets.net, '<span color="#CC9393">${eth0 down_kb}</span> <span color="#7F9F7F">${eth0 up_kb}</span>', 3)
 
 for s = 1, screen.count() do
     -- Create a promptbox for each screen
@@ -302,11 +277,6 @@ for s = 1, screen.count() do
     right_layout:add(freq1)
     right_layout:add(freq2)
     right_layout:add(freq3)
-    right_layout:add(separator)
-    right_layout:add(batwidget0)
-    right_layout:add(battime0)
-    right_layout:add(batwidget1)
-    right_layout:add(battime1)
     right_layout:add(separator)
     if s == 1 then right_layout:add(wibox.widget.systray()) end
     right_layout:add(mytextclock)
