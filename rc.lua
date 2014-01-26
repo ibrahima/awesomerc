@@ -239,21 +239,23 @@ volwidget = wibox.widget.textbox() -- widget({ type = "textbox" })
 volbar:set_vertical(true):set_ticks(true)
 volbar:set_height(12):set_width(8):set_ticks_size(2)
 volbar:set_background_color(beautiful.fg_off_widget)
+-- volbar:set_color({ type = "linear", from = { 0, 0 }, to = { 0, 10 },
+--                        stops = { { 0, beautiful.fg_widget }, { 0.5, beautiful.fg_center_widget }, { 1, beautiful.fg_end_widget }} })
 volbar:set_color({ type = "linear", from = { 0, 0 }, to = { 0, 10 },
-                       stops = { { 0, beautiful.fg_widget }, { 0.5, beautiful.fg_center_widget }, { 1, beautiful.fg_end_widget }} })
+                       stops = { { 0, "#AECF96" }, { 0.5, "#88A175" }, { 1, "#FF5656" }} })
 
 -- Enable caching
 vicious.cache(vicious.widgets.volume)
 -- Register widgets
-vicious.register(volbar,    vicious.widgets.volume,  "$1",  2, "PCM")
-vicious.register(volwidget, vicious.widgets.volume, " $1%", 2, "PCM")
+vicious.register(volbar,    vicious.widgets.volume,  "$1",  2, "-c 1 Master")
+vicious.register(volwidget, vicious.widgets.volume, " $1%", 2, "-c 1 Master")
 -- Register buttons
--- volbar.widget:buttons(awful.util.table.join(
---                          awful.button({ }, 1, function () exec("kmix") end),
---                          awful.button({ }, 4, function () exec("amixer -q set PCM 2dB+", false) end),
---                          awful.button({ }, 5, function () exec("amixer -q set PCM 2dB-", false) end)
--- )) -- Register assigned buttons
--- volwidget:buttons(volbar.widget:buttons())
+volbar:buttons(awful.util.table.join(
+                         -- awful.button({ }, 1, function () awful.util.spawn("kmix") end),
+                         awful.button({ }, 4, function () awful.util.spawn("amixer -q -c 1 set Master 2dB+", false) end),
+                         awful.button({ }, 5, function () awful.util.spawn("amixer -q -c 1 set Master 2dB-", false) end)
+)) -- Register assigned buttons
+volwidget:buttons(volbar:buttons())
 -- }}}
 
 --  Network usage widget
@@ -290,11 +292,12 @@ for s = 1, screen.count() do
 
     -- Widgets that are aligned to the right
     local right_layout = wibox.layout.fixed.horizontal()
-    -- right_layout:add(volwidget)
-    -- right_layout:add(volbar.widget)
-    -- right_layout:add(volicon)
     right_layout:add(separator)
     right_layout:add(netwidget)
+    right_layout:add(separator)
+    right_layout:add(volwidget)
+    right_layout:add(volbar)
+    right_layout:add(volicon)
     right_layout:add(separator)
     -- right_layout:add(memwidget)
     right_layout:add(cpuwidget)
@@ -388,7 +391,15 @@ globalkeys = awful.util.table.join(
                   awful.util.getdir("cache") .. "/history_eval")
               end),
     -- Menubar
-    awful.key({ modkey }, "p", function() menubar.show() end)
+    awful.key({ modkey }, "p", function() menubar.show() end),
+
+    -- Volume keys
+   awful.key({ }, "XF86AudioRaiseVolume", function ()
+                awful.util.spawn("amixer -c 1 -q set Master 2dB+") end),
+   awful.key({ }, "XF86AudioLowerVolume", function ()
+                awful.util.spawn("amixer -c 1 -q set Master 2dB-") end),
+   awful.key({ }, "XF86AudioMute", function ()
+                awful.util.spawn("amixer -c 1 -D pulse set Master 1+ toggle") end)
 )
 
 clientkeys = awful.util.table.join(
