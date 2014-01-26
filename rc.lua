@@ -229,9 +229,7 @@ battime1 = wibox.widget.textbox()
 vicious.register(battime0, vicious.widgets.bat, "($3)$1", 61, "BAT0")
 vicious.register(battime1, vicious.widgets.bat, "($3)$1", 61, "BAT1")
 -- {{{ Volume level
-volicon = wibox.widget.imagebox() --widget({ type = "imagebox" })
-volicon:set_image(beautiful.widget_vol)
--- volicon.image = image(beautiful.widget_vol)
+volicon = wibox.widget.textbox() --widget({ type = "imagebox" })
 -- Initialize widgets
 volbar    = awful.widget.progressbar()
 volwidget = wibox.widget.textbox() -- widget({ type = "textbox" })
@@ -247,8 +245,9 @@ volbar:set_color({ type = "linear", from = { 0, 0 }, to = { 0, 10 },
 -- Enable caching
 vicious.cache(vicious.widgets.volume)
 -- Register widgets
-vicious.register(volbar,    vicious.widgets.volume,  "$1",  2, "-c 1 Master")
-vicious.register(volwidget, vicious.widgets.volume, " $1%", 2, "-c 1 Master")
+vicious.register(volbar,    vicious.widgets.volume,  "$1",  1, "-c 1 Master")
+vicious.register(volwidget, vicious.widgets.volume, " $1%", 1, "-c 1 Master")
+vicious.register(volicon, vicious.widgets.volume, " $2", 1, "-c 1 Master")
 -- Register buttons
 volbar:buttons(awful.util.table.join(
                          -- awful.button({ }, 1, function () awful.util.spawn("kmix") end),
