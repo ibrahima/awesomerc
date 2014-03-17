@@ -263,6 +263,16 @@ netwidget = wibox.widget.textbox()
  -- Register widget
 vicious.register(netwidget, vicious.widgets.net, '<span color="#CC9393">${wlan0 down_kb}</span> <span color="#7F9F7F">${wlan0 up_kb}</span>', 3)
 
+mwidget = wibox.widget.textbox()
+ -- Register widget
+vicious.register(mwidget, vicious.widgets.mdir, "$1<b>✉</b>",  3, {"/home/ibrahim/Maildir/iawwal@eng.ucsd.edu/INBOX",
+                                                           "/home/ibrahim/Maildir/ibrahim.awwal@gmail.com/INBOX"})
+
+orgwidget = wibox.widget.textbox()
+ -- Register widget
+vicious.register(orgwidget, vicious.widgets.org, "$1 $2 $3 $4",  3, {"/home/ibrahim/SparkleShare/braindump/school.org"})
+vicious.cache(vicious.widgets.org)
+
 for s = 1, screen.count() do
     -- Create a promptbox for each screen
     mypromptbox[s] = awful.widget.prompt()
@@ -293,6 +303,10 @@ for s = 1, screen.count() do
     local right_layout = wibox.layout.fixed.horizontal()
     right_layout:add(separator)
     right_layout:add(netwidget)
+    right_layout:add(separator)
+    right_layout:add(mwidget)
+    right_layout:add(separator)
+    right_layout:add(orgwidget)
     right_layout:add(separator)
     right_layout:add(volwidget)
     right_layout:add(volbar)
