@@ -273,6 +273,22 @@ orgwidget = wibox.widget.textbox()
 vicious.register(orgwidget, vicious.widgets.org, "$1 $2 $3 $4",  3, {"/home/ibrahim/SparkleShare/braindump/school.org", "/home/ibrahim/SparkleShare/braindump/research.org"})
 vicious.cache(vicious.widgets.org)
 
+-- Org mode current task widget
+orgtaskwidget = wibox.widget.textbox()
+
+updateorgtask = function()
+   f = io.open("/home/ibrahim/.current-task")
+   t = f:read("*line")
+   orgtaskwidget:set_text(t)
+end
+
+updateorgtask()
+
+mytimer = timer({ timeout = 30 })
+mytimer:connect_signal("timeout", updateorgtask)
+mytimer:start()
+
+
 for s = 1, screen.count() do
     -- Create a promptbox for each screen
     mypromptbox[s] = awful.widget.prompt()
@@ -301,6 +317,8 @@ for s = 1, screen.count() do
 
     -- Widgets that are aligned to the right
     local right_layout = wibox.layout.fixed.horizontal()
+    right_layout:add(separator)
+    right_layout:add(orgtaskwidget)
     right_layout:add(separator)
     right_layout:add(netwidget)
     right_layout:add(separator)
