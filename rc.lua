@@ -220,9 +220,9 @@ volbar:set_color({ type = "linear", from = { 0, 0 }, to = { 0, 10 },
 -- Enable caching
 vicious.cache(vicious.widgets.volume)
 -- Register widgets
-vicious.register(volbar,    vicious.widgets.volume,  "$1",  1, "-c 1 Master")
-vicious.register(volwidget, vicious.widgets.volume, " $1%", 1, "-c 1 Master")
-vicious.register(volicon, vicious.widgets.volume, " $2", 1, "-c 1 Master")
+vicious.register(volbar,    vicious.widgets.volume,  "$1",  1, "Master")
+vicious.register(volwidget, vicious.widgets.volume, " $1%", 1, "Master")
+vicious.register(volicon, vicious.widgets.volume, " $2", 1, "Master")
 -- Register buttons
 volbar:buttons(awful.util.table.join(
                          -- awful.button({ }, 1, function () awful.util.spawn("kmix") end),
@@ -396,11 +396,11 @@ globalkeys = awful.util.table.join(
 
     -- Volume keys
    awful.key({ }, "XF86AudioRaiseVolume", function ()
-                awful.util.spawn("amixer -c 1 -q set Master 2dB+") end),
+                awful.util.spawn("amixer -q set Master 2dB+") end),
    awful.key({ }, "XF86AudioLowerVolume", function ()
-                awful.util.spawn("amixer -c 1 -q set Master 2dB-") end),
+                awful.util.spawn("amixer -q set Master 2dB-") end),
    awful.key({ }, "XF86AudioMute", function ()
-                awful.util.spawn("amixer -c 1 -D pulse set Master 1+ toggle") end)
+                awful.util.spawn("amixer -D pulse set Master 1+ toggle") end)
 )
 
 clientkeys = awful.util.table.join(
