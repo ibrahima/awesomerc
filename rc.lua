@@ -99,7 +99,7 @@ end
 tags = {}
 for s = 1, screen.count() do
     -- Each screen has its own tag table.
-    tags[s] = awful.tag({ 1, 2, 3, 4, 5, 6, 7, 8, 9 }, s, layouts[1])
+    tags[s] = awful.tag({ 1, 2, 3, 4, 5, 6, 7, 8, 9 }, s, layouts[2])
 end
 -- }}}
 
@@ -127,7 +127,7 @@ menubar.utils.terminal = terminal -- Set the terminal for applications that requ
 
 -- {{{ Wibox
 -- Create a textclock widget
-mytextclock = awful.widget.textclock()
+mytextclock = awful.widget.textclock(" %a %b %d, %I:%M%p")
 
 -- Create a wibox for each screen and add it
 mywibox = {}
@@ -204,9 +204,7 @@ vicious.register(freq3, vicious.widgets.cpufreq, "$1$5",7, "cpu3")
 separator = wibox.widget.textbox()
 separator:set_text("::");
 -- {{{ Volume level
-volicon = wibox.widget.imagebox() --widget({ type = "imagebox" })
-volicon:set_image(beautiful.widget_vol)
--- volicon.image = image(beautiful.widget_vol)
+volicon = wibox.widget.textbox() --widget({ type = "imagebox" })
 -- Initialize widgets
 volbar    = awful.widget.progressbar()
 volwidget = wibox.widget.textbox() -- widget({ type = "textbox" })
@@ -214,21 +212,24 @@ volwidget = wibox.widget.textbox() -- widget({ type = "textbox" })
 volbar:set_vertical(true):set_ticks(true)
 volbar:set_height(12):set_width(8):set_ticks_size(2)
 volbar:set_background_color(beautiful.fg_off_widget)
+-- volbar:set_color({ type = "linear", from = { 0, 0 }, to = { 0, 10 },
+--                        stops = { { 0, beautiful.fg_widget }, { 0.5, beautiful.fg_center_widget }, { 1, beautiful.fg_end_widget }} })
 volbar:set_color({ type = "linear", from = { 0, 0 }, to = { 0, 10 },
-                       stops = { { 0, beautiful.fg_widget }, { 0.5, beautiful.fg_center_widget }, { 1, beautiful.fg_end_widget }} })
+                       stops = { { 0, "#AECF96" }, { 0.5, "#88A175" }, { 1, "#FF5656" }} })
 
 -- Enable caching
 vicious.cache(vicious.widgets.volume)
 -- Register widgets
-vicious.register(volbar,    vicious.widgets.volume,  "$1",  2, "PCM")
-vicious.register(volwidget, vicious.widgets.volume, " $1%", 2, "PCM")
+vicious.register(volbar,    vicious.widgets.volume,  "$1",  1, "-c 1 Master")
+vicious.register(volwidget, vicious.widgets.volume, " $1%", 1, "-c 1 Master")
+vicious.register(volicon, vicious.widgets.volume, " $2", 1, "-c 1 Master")
 -- Register buttons
--- volbar.widget:buttons(awful.util.table.join(
---                          awful.button({ }, 1, function () exec("kmix") end),
---                          awful.button({ }, 4, function () exec("amixer -q set PCM 2dB+", false) end),
---                          awful.button({ }, 5, function () exec("amixer -q set PCM 2dB-", false) end)
--- )) -- Register assigned buttons
--- volwidget:buttons(volbar.widget:buttons())
+volbar:buttons(awful.util.table.join(
+                         -- awful.button({ }, 1, function () awful.util.spawn("kmix") end),
+                         awful.button({ }, 4, function () awful.util.spawn("amixer -q -c 1 set Master 2dB+", false) end),
+                         awful.button({ }, 5, function () awful.util.spawn("amixer -q -c 1 set Master 2dB-", false) end)
+)) -- Register assigned buttons
+volwidget:buttons(volbar:buttons())
 -- }}}
 
 --  Network usage widget
@@ -236,6 +237,32 @@ vicious.register(volwidget, vicious.widgets.volume, " $1%", 2, "PCM")
 netwidget = wibox.widget.textbox()
  -- Register widget
 vicious.register(netwidget, vicious.widgets.net, '<span color="#CC9393">${eth0 down_kb}</span> <span color="#7F9F7F">${eth0 up_kb}</span>', 3)
+
+mwidget = wibox.widget.textbox()
+ -- Register widget
+vicious.register(mwidget, vicious.widgets.mdir, "$1<b>✉</b>",  3, {"/home/ibrahim/Maildir/iawwal@eng.ucsd.edu/INBOX",
+                                                           "/home/ibrahim/Maildir/ibrahim.awwal@gmail.com/INBOX"})
+
+orgwidget = wibox.widget.textbox()
+ -- Register widget
+vicious.register(orgwidget, vicious.widgets.org, "$1 $2 $3 $4",  3, {"/home/ibrahim/SparkleShare/braindump/school.org", "/home/ibrahim/SparkleShare/braindump/research.org"})
+vicious.cache(vicious.widgets.org)
+
+-- Org mode current task widget
+orgtaskwidget = wibox.widget.textbox()
+
+updateorgtask = function()
+   f = io.open("/home/ibrahim/.current-task")
+   t = f:read("*line")
+   orgtaskwidget:set_text(t)
+end
+
+updateorgtask()
+
+mytimer = timer({ timeout = 30 })
+mytimer:connect_signal("timeout", updateorgtask)
+mytimer:start()
+
 
 for s = 1, screen.count() do
     -- Create a promptbox for each screen
@@ -265,11 +292,18 @@ for s = 1, screen.count() do
 
     -- Widgets that are aligned to the right
     local right_layout = wibox.layout.fixed.horizontal()
-    -- right_layout:add(volwidget)
-    -- right_layout:add(volbar.widget)
-    -- right_layout:add(volicon)
+    right_layout:add(separator)
+    right_layout:add(orgtaskwidget)
     right_layout:add(separator)
     right_layout:add(netwidget)
+    right_layout:add(separator)
+    right_layout:add(mwidget)
+    right_layout:add(separator)
+    right_layout:add(orgwidget)
+    right_layout:add(separator)
+    right_layout:add(volwidget)
+    right_layout:add(volbar)
+    right_layout:add(volicon)
     right_layout:add(separator)
     -- right_layout:add(memwidget)
     right_layout:add(cpuwidget)
@@ -358,7 +392,15 @@ globalkeys = awful.util.table.join(
                   awful.util.getdir("cache") .. "/history_eval")
               end),
     -- Menubar
-    awful.key({ modkey }, "p", function() menubar.show() end)
+    awful.key({ modkey }, "p", function() menubar.show() end),
+
+    -- Volume keys
+   awful.key({ }, "XF86AudioRaiseVolume", function ()
+                awful.util.spawn("amixer -c 1 -q set Master 2dB+") end),
+   awful.key({ }, "XF86AudioLowerVolume", function ()
+                awful.util.spawn("amixer -c 1 -q set Master 2dB-") end),
+   awful.key({ }, "XF86AudioMute", function ()
+                awful.util.spawn("amixer -c 1 -D pulse set Master 1+ toggle") end)
 )
 
 clientkeys = awful.util.table.join(
@@ -432,32 +474,65 @@ root.keys(globalkeys)
 -- }}}
 
 -- {{{ Rules
-awful.rules.rules = {
-    -- All clients will match this rule.
-    { rule = { },
-      properties = { border_width = beautiful.border_width,
-                     border_color = beautiful.border_normal,
-                     focus = awful.client.focus.filter,
-                     keys = clientkeys,
-                     buttons = clientbuttons } },
-    { rule = { class = "MPlayer" },
-      properties = { floating = true } },
-    { rule = { class = "pinentry" },
-      properties = { floating = true } },
-    { rule = { class = "gimp" },
-      properties = { floating = true } },
-    { rule = { class = "mathworks", name = "Figure" },
-      properties = { floating = true } },
-    { rule = { class = "Google-chrome" },
-      properties = { tag = tags[1][2] } },
-    { rule = { class = "Emacs" },
-      properties = { tag = tags[1][1] } },
-    { rule = { class = "Pidgin" },
-      properties = { tag = tags[1][4] } },
-    -- Set Firefox to always map on tags number 2 of screen 1.
-    -- { rule = { class = "Firefox" },
-    --   properties = { tag = tags[1][2] } },
-}
+if screen.count() == 1 then
+   awful.rules.rules = {
+      -- All clients will match this rule.
+      { rule = { },
+        properties = { border_width = beautiful.border_width,
+                       border_color = beautiful.border_normal,
+                       focus = awful.client.focus.filter,
+                       keys = clientkeys,
+                       buttons = clientbuttons } },
+      { rule = { class = "MPlayer" },
+        properties = { floating = true } },
+      { rule = { class = "Guake" },
+        properties = { floating = true } },
+      { rule = { class = "pinentry" },
+        properties = { floating = true } },
+      { rule = { class = "gimp" },
+        properties = { floating = true } },
+      { rule = { class = "mathworks", name = "Figure" },
+        properties = { floating = true } },
+      { rule = { class = "Google-chrome" },
+        properties = { tag = tags[1][2] } },
+      { rule = { class = "Emacs" },
+        properties = { tag = tags[1][1] } },
+      { rule = { class = "Pidgin" },
+        properties = { tag = tags[1][4] } },
+      -- Set Firefox to always map on tags number 2 of screen 1.
+      { rule = { class = "Firefox" },
+        properties = { tag = tags[1][2] } },
+   }
+else
+   awful.rules.rules = {
+      -- All clients will match this rule.
+      { rule = { },
+        properties = { border_width = beautiful.border_width,
+                       border_color = beautiful.border_normal,
+                       focus = awful.client.focus.filter,
+                       keys = clientkeys,
+                       buttons = clientbuttons } },
+      { rule = { class = "MPlayer" },
+        properties = { floating = true } },
+      { rule = { class = "Guake" },
+        properties = { floating = true } },
+      { rule = { class = "pinentry" },
+        properties = { floating = true } },
+      { rule = { class = "gimp" },
+        properties = { floating = true } },
+      { rule = { class = "mathworks", name = "Figure" },
+        properties = { floating = true } },
+      { rule = { class = "Google-chrome" },
+        properties = { tag = tags[2][2] } },
+      { rule = { class = "Emacs" },
+        properties = { tag = tags[2][1] } },
+      { rule = { class = "Pidgin" },
+        properties = { tag = tags[1][4] } },
+      { rule = { class = "Firefox" },
+        properties = { tag = tags[2][2] } },
+   }
+
+end
 -- }}}
 
 -- {{{ Signals
