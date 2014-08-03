@@ -20,13 +20,14 @@ local beautiful = require("beautiful")
 -- Notification library
 local naughty = require("naughty")
 local menubar = require("menubar")
+local scratchdrop = require("scratchdrop")
+local backlight = require("backlight")
 
--- Load Debian menu entries
 require("debian.menu")
 require("vicious")
 
 awful.util.spawn_with_shell("compton -cfb")
-
+io.stderr:write("Awesome is starting\n");
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
 -- another config (This code will only ever execute for the fallback config)
@@ -257,6 +258,16 @@ volbar:buttons(awful.util.table.join(
 volwidget:buttons(volbar:buttons())
 -- }}}
 
+-- Brightness widget
+brightbar = awful.widget.progressbar()
+brightbar:set_vertical(true):set_ticks(true)
+brightbar:set_height(12):set_width(8):set_ticks_size(2)
+brightbar:set_background_color(beautiful.fg_off_widget)
+brightbar:set_color({ type = "linear", from = { 0, 0 }, to = { 0, 10 },
+                       stops = { { 0, "#AECF96" }, { 0.5, "#88A175" }, { 1, "#FF5656" }} })
+vicious.cache(backlight)
+vicious.register(brightbar, backlight, "$1", 11)
+
 --  Network usage widget
 -- Initialize widget, use widget({ type = "textbox" }) for awesome < 3.5
 netwidget = wibox.widget.textbox()
@@ -319,6 +330,8 @@ for s = 1, screen.count() do
     local right_layout = wibox.layout.fixed.horizontal()
     right_layout:add(separator)
     right_layout:add(orgtaskwidget)
+    right_layout:add(separator)
+    right_layout:add(brightbar)
     right_layout:add(separator)
     right_layout:add(netwidget)
     right_layout:add(separator)
@@ -430,7 +443,22 @@ globalkeys = awful.util.table.join(
    awful.key({ }, "XF86AudioLowerVolume", function ()
                 awful.util.spawn("amixer -c 1 -q set Master 2dB-") end),
    awful.key({ }, "XF86AudioMute", function ()
-                awful.util.spawn("amixer -c 1 -D pulse set Master 1+ toggle") end)
+                awful.util.spawn("amixer -c 1 -D pulse set Master 1+ toggle") end),
+
+   -- Scratchdrop
+    awful.key({ modkey }, "`", function() scratchdrop("evilvte -g +10+10", "bottom", "center", 1920, 320, false) end)
+    -- Parameters:
+    --   prog   - Program to run; "urxvt", "gmrun", "thunderbird"
+    --   vert   - Vertical; "bottom", "center" or "top" (default)
+    --   horiz  - Horizontal; "left", "right" or "center" (default)
+    --   width  - Width in absolute pixels, or width percentage
+    --            when <= 1 (1 (100% of the screen) by default)
+    --   height - Height in absolute pixels, or height percentage
+    --            when <= 1 (0.25 (25% of the screen) by default)
+    --   sticky - Visible on all tags, false by default
+    --   screen - Screen (optional), mouse.screen by default
+    -- Load Debian menu entries
+
 )
 
 clientkeys = awful.util.table.join(
