@@ -295,6 +295,34 @@ end
 
 updateorgtask()
 
+--Create a weather widget
+weatherwidget = wibox.widget.textbox()
+weatherwidget:set_text(awful.util.pread(
+   "weather 92122 --headers=Temperature --quiet | awk '{print $2, $3}'"
+)) -- replace METARID with the metar ID for your area. This uses metric. If you prefer Fahrenheit remove the "-m" in "--quiet -m".
+weathertimer = timer(
+   { timeout = 900 } -- Update every 15 minutes.
+)
+weathertimer:connect_signal(
+   "timeout", function()
+      weatherwidget:set_text(awful.util.pread(
+         "weather 92122 --headers=Temperature --quiet | awk '{print $2, $3}' &"
+      )) --replace METARID and remove -m if you want Fahrenheit
+end)
+
+weathertimer:start() -- Start the timer
+weatherwidget:connect_signal(
+   "mouse::enter", function()
+      weather = naughty.notify(
+         {title="Weather",text=awful.util.pread("weather 92122")})
+end) -- this creates the hover feature. replace METARID and remove -m if you want Fahrenheit
+
+weatherwidget:connect_signal(
+   "mouse::leave", function()
+      naughty.destroy(weather)
+end)
+
+
 mytimer = timer({ timeout = 30 })
 mytimer:connect_signal("timeout", updateorgtask)
 mytimer:start()
@@ -355,6 +383,8 @@ for s = 1, screen.count() do
     right_layout:add(battime0)
     right_layout:add(batwidget1)
     right_layout:add(battime1)
+    right_layout:add(separator)
+    right_layout:add(weatherwidget)
     right_layout:add(separator)
     if s == 1 then right_layout:add(wibox.widget.systray()) end
     right_layout:add(mytextclock)
