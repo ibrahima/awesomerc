@@ -189,7 +189,7 @@ vicious.register(cpuwidget, vicious.widgets.cpu, "$1")
 
 memwidget = wibox.widget.textbox()
 vicious.cache(vicious.widgets.mem)
-vicious.register(memwidget, vicious.widgets.mem, "$1 ($2MB/$3MB)", 13)
+vicious.register(memwidget, vicious.widgets.mem, "RAM: $1%", 13)
 
 freq0 = wibox.widget.textbox()
 -- vicious.cache(vicious.widgets.cpufreq)
@@ -343,7 +343,8 @@ for s = 1, screen.count() do
     right_layout:add(volbar)
     right_layout:add(volicon)
     right_layout:add(separator)
-    -- right_layout:add(memwidget)
+    right_layout:add(memwidget)
+    right_layout:add(separator)
     right_layout:add(cpuwidget)
     right_layout:add(freq0)
     right_layout:add(freq1)
