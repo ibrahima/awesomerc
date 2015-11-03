@@ -2,7 +2,7 @@
 _awesome_quit = awesome.quit
 awesome.quit = function()
    if os.getenv("DESKTOP_SESSION") == "awesome-gnome" then
-      os.execute("/usr/bin/gnome-session-quit")
+      os.execute("/usr/bin/gnome-session-quit  --logout --no-prompt")
    else
       _awesome_quit()
    end
@@ -114,8 +114,9 @@ myawesomemenu = {
 }
 
 mymainmenu = awful.menu({ items = { { "awesome", myawesomemenu, beautiful.awesome_icon },
-                                    { "Debian", debian.menu.Debian_menu.Debian },
-                                    { "open terminal", terminal }
+                                    { "Ubuntu", debian.menu.Debian_menu.Debian },
+                                    { "Terminal", terminal },
+				    { "Log Out", "/home/ibrahim/bin/power_menu.sh" }
                                   }
                         })
 
