@@ -24,9 +24,9 @@ local scratchdrop = require("scratchdrop")
 local backlight = require("backlight")
 
 require("debian.menu")
-require("vicious")
+vicious = require("vicious")
 
-awful.util.spawn_with_shell("compton -cfb")
+awful.util.spawn_with_shell("compton -cfb --config ~/.config/compton.conf")
 io.stderr:write("Awesome is starting\n");
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
@@ -55,7 +55,7 @@ end
 
 -- {{{ Variable definitions
 -- Themes define colours, icons, and wallpapers
-beautiful.init("/usr/share/awesome/themes/default/theme.lua")
+beautiful.init("~/.config/awesome/theme.lua")
 
 -- This is used later as the default terminal and editor to run.
 terminal = "x-terminal-emulator"
@@ -297,17 +297,26 @@ end
 updateorgtask()
 
 --Create a weather widget
+function trim(s)
+  -- from PiL2 20.4
+  return (s:gsub("^%s*(.-)%s*$", "%1"))
+end
+location = trim(awful.util.pread("curl ipinfo.io/loc"))
+city = awful.util.pread("curl ipinfo.io/city")
 weatherwidget = wibox.widget.textbox()
 weatherwidget:set_text(awful.util.pread(
-   "weather 92122 --headers=Temperature --quiet | awk '{print $2, $3}'"
+   "weather " .. location .. " --headers=Temperature --quiet | awk '{print $2, $3}'"
 )) -- replace METARID with the metar ID for your area. This uses metric. If you prefer Fahrenheit remove the "-m" in "--quiet -m".
+degrees=awful.util.pread(
+   "weather " .. location .. " --headers=Temperature --quiet | awk '{print $2, $3}'"
+)
 weathertimer = timer(
    { timeout = 900 } -- Update every 15 minutes.
 )
 weathertimer:connect_signal(
    "timeout", function()
       weatherwidget:set_text(awful.util.pread(
-         "weather 92122 --headers=Temperature --quiet | awk '{print $2, $3}' &"
+         "weather " .. location .. " --headers=Temperature --quiet | awk '{print $2, $3}' &"
       )) --replace METARID and remove -m if you want Fahrenheit
 end)
 
@@ -315,7 +324,10 @@ weathertimer:start() -- Start the timer
 weatherwidget:connect_signal(
    "mouse::enter", function()
       weather = naughty.notify(
-         {title="Weather",text=awful.util.pread("weather 92122")})
+         {title="Weather",text=awful.util.pread("weather "..location)})
+      weatherwidget:set_text(awful.util.pread(
+   "weather " .. location .. " --headers=Temperature --quiet | awk '{print $2, $3}'"
+      ))
 end) -- this creates the hover feature. replace METARID and remove -m if you want Fahrenheit
 
 weatherwidget:connect_signal(
@@ -425,7 +437,9 @@ globalkeys = awful.util.table.join(
             if client.focus then client.focus:raise() end
         end),
     awful.key({ modkey,           }, "w", function () mymainmenu:show() end),
-
+    -- display manipulation commands
+    awful.key({ modkey,           }, "[", function () awful.util.spawn("disper -d eDP-1,HDMI-1 -t top -e") end),
+    awful.key({ modkey,           }, "]", function () awful.util.spawn("disper -d eDP-1,HDMI-1 -s") end),
     -- Layout manipulation
     awful.key({ modkey, "Shift"   }, "j", function () awful.client.swap.byidx(  1)    end),
     awful.key({ modkey, "Shift"   }, "k", function () awful.client.swap.byidx( -1)    end),
@@ -583,8 +597,8 @@ if screen.count() == 1 then
         properties = { floating = true } },
       { rule = { class = "mathworks", name = "Figure" },
         properties = { floating = true } },
-      { rule = { class = "Google-chrome" },
-        properties = { tag = tags[1][2] } },
+      -- { rule = { class = "Google-chrome" },
+      --   properties = { tag = tags[1][2] } },
       { rule = { class = "Emacs" },
         properties = { tag = tags[1][1] } },
       { rule = { class = "Pidgin" },
@@ -592,6 +606,10 @@ if screen.count() == 1 then
       -- Set Firefox to always map on tags number 2 of screen 1.
       { rule = { class = "Firefox" },
         properties = { tag = tags[1][2] } },
+      { rule = { class = "google-chrome", name = "Hangouts" },
+        properties = { tag = tags[1][8], sticky = false, ontop=true, border_width = 0 } },
+      { rule = { class = "google-chrome", role = "pop-up" },
+        properties = { tag = tags[1][8], sticky = false, ontop=true, border_width = 0 } },
    }
 else
    awful.rules.rules = {
@@ -612,14 +630,19 @@ else
         properties = { floating = true } },
       { rule = { class = "mathworks", name = "Figure" },
         properties = { floating = true } },
-      { rule = { class = "Google-chrome" },
-        properties = { tag = tags[2][2] } },
+      { rule = { class = "google-chrome" },
+        properties = { tag = tags[1][2] } },
       { rule = { class = "Emacs" },
-        properties = { tag = tags[2][1] } },
+        properties = { tag = tags[1][1] } },
       { rule = { class = "Pidgin" },
         properties = { tag = tags[1][4] } },
       { rule = { class = "Firefox" },
-        properties = { tag = tags[2][2] } },
+        properties = { tag = tags[2][1] } },
+      { rule = { class = "google-chrome", name = "Hangouts" },
+        properties = { tag = tags[1][8], sticky = false, ontop=true, border_width = 0 } },
+      -- { rule = { class = "google-chrome", role = "pop-up" },
+      --   properties = { tag = tags[1][8], sticky = false, ontop=true, border_width = 0 } },
+
    }
 
 end
