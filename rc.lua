@@ -288,7 +288,7 @@ vicious.register(mwidget, vicious.widgets.mdir, "$1<b>✉</b>",  3, {"/home/ibra
 
 orgwidget = wibox.widget.textbox()
  -- Register widget
-vicious.register(orgwidget, vicious.widgets.org, "$1 $2 $3 $4",  3, {"/home/ibrahim/SparkleShare/braindump/school.org", "/home/ibrahim/SparkleShare/braindump/research.org"})
+vicious.register(orgwidget, vicious.widgets.org, "$1 $2 $3 $4",  3, {"/home/ibrahim/SparkleShare/braindump/gradescope.org", "/home/ibrahim/SparkleShare/braindump/misc.org"})
 vicious.cache(vicious.widgets.org)
 
 -- Org mode current task widget
