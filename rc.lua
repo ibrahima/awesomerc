@@ -192,15 +192,21 @@ memwidget = wibox.widget.textbox()
 vicious.cache(vicious.widgets.mem)
 vicious.register(memwidget, vicious.widgets.mem, "RAM: $1%", 13)
 
+one_decimal = function(widget, args)
+   return string.format("%.1f|", args[2])
+end
 freq0 = wibox.widget.textbox()
 -- vicious.cache(vicious.widgets.cpufreq)
-vicious.register(freq0, vicious.widgets.cpufreq, "$1|",7, "cpu0")
+vicious.register(freq0, vicious.widgets.cpufreq, one_decimal, 7, "cpu0")
 freq1 = wibox.widget.textbox()
-vicious.register(freq1, vicious.widgets.cpufreq, "$1|",7, "cpu1")
+vicious.register(freq1, vicious.widgets.cpufreq, one_decimal,7, "cpu1")
 freq2 = wibox.widget.textbox()
-vicious.register(freq2, vicious.widgets.cpufreq, "$1|",7, "cpu2")
+vicious.register(freq2, vicious.widgets.cpufreq, one_decimal,7, "cpu2")
 freq3 = wibox.widget.textbox()
-vicious.register(freq3, vicious.widgets.cpufreq, "$1$5",7, "cpu3")
+vicious.register(freq3, vicious.widgets.cpufreq,
+                 function(widget, args)
+                    return string.format("%.1f%s", args[2], args[5])
+                 end, 7, "cpu3")
 
 -- Initialize widget
 separator = wibox.widget.textbox()
