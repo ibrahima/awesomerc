@@ -100,7 +100,7 @@ end
 
 -- {{{ Tags
 -- Define a tag table which hold all screen tags.
--- tags = {}
+tags = {}
 -- for s = 1, screen.count() do
 --     -- Each screen has its own tag table.
 --     tags[s] = awful.tag({ 1, 2, 3, 4, 5, 6, 7, 8, 9 }, s, layouts[2])
@@ -235,7 +235,7 @@ vicious.register(freq3, vicious.widgets.cpufreq,
 separator = wibox.widget.textbox()
 separator:set_text("::");
 
-batwidget0 = awful.widget.progressbar()
+batwidget0 = wibox.widget.progressbar()
 batwidget0:set_width(8)
 batwidget0:set_height(10)
 batwidget0:set_vertical(true)
@@ -245,7 +245,7 @@ batwidget0:set_color({ type = "linear", from = { 0, 0 }, to = { 0, 10 },
                        stops = { { 0, "#AECF96" }, { 0.5, "#88A175" }, { 1, "#FF5656" }} })
 vicious.register(batwidget0, vicious.widgets.bat, "$2", 61, "BAT0")
 
-batwidget1 = awful.widget.progressbar()
+batwidget1 = wibox.widget.progressbar()
 batwidget1:set_width(8)
 batwidget1:set_height(10)
 batwidget1:set_vertical(true)
@@ -262,11 +262,14 @@ vicious.register(battime1, vicious.widgets.bat, "($3)$1", 61, "BAT1")
 -- {{{ Volume level
 volicon = wibox.widget.textbox() --widget({ type = "imagebox" })
 -- Initialize widgets
-volbar    = awful.widget.progressbar()
+volbar    = wibox.widget.progressbar()
 volwidget = wibox.widget.textbox() -- widget({ type = "textbox" })
 -- Progressbar properties
-volbar:set_vertical(true):set_ticks(true)
-volbar:set_height(12):set_width(8):set_ticks_size(2)
+volbar:set_vertical(true)
+volbar:set_ticks(true)
+volbar:set_height(12)
+volbar:set_width(8)
+volbar:set_ticks_size(2)
 volbar:set_background_color(beautiful.fg_off_widget)
 -- volbar:set_color({ type = "linear", from = { 0, 0 }, to = { 0, 10 },
 --                        stops = { { 0, beautiful.fg_widget }, { 0.5, beautiful.fg_center_widget }, { 1, beautiful.fg_end_widget }} })
@@ -289,9 +292,12 @@ volwidget:buttons(volbar:buttons())
 -- }}}
 
 -- Brightness widget
-brightbar = awful.widget.progressbar()
-brightbar:set_vertical(true):set_ticks(true)
-brightbar:set_height(12):set_width(8):set_ticks_size(2)
+brightbar = wibox.widget.progressbar()
+brightbar:set_vertical(true)
+brightbar:set_ticks(true)
+brightbar:set_height(12)
+brightbar:set_width(8)
+brightbar:set_ticks_size(2)
 brightbar:set_background_color(beautiful.fg_off_widget)
 brightbar:set_color({ type = "linear", from = { 0, 0 }, to = { 0, 10 },
                        stops = { { 0, "#AECF96" }, { 0.5, "#88A175" }, { 1, "#FF5656" }} })
@@ -383,7 +389,9 @@ awful.screen.connect_for_each_screen(function(s)
     end
 
     -- Each screen has its own tag table.
-    awful.tag({ "1", "2", "3", "4", "5", "6", "7", "8", "9" }, s, awful.layout.layouts[2])
+    tags[s] = awful.tag({ "1", "2", "3", "4", "5", "6", "7", "8", "9" }, s, awful.layout.layouts[2])
+
+    -- tags[s]["1"].icon = "@AWESOME_THEMES_PATH@/default/layouts/spiralw.png"
 
     -- Create a promptbox for each screen
     mypromptbox[s] = awful.widget.prompt()
@@ -622,78 +630,117 @@ root.keys(globalkeys)
 -- }}}
 
 -- {{{ Rules
-if screen.count() == 1 then
-   awful.rules.rules = {
-      -- All clients will match this rule.
-      { rule = { },
-        properties = { border_width = beautiful.border_width,
-                       border_color = beautiful.border_normal,
-                       focus = awful.client.focus.filter,
-                       raise = true,
-                       keys = clientkeys,
-                       buttons = clientbuttons,
-                       placement = awful.placement.no_overlap+awful.placement.no_offscreen
-        }
-      },
-      { rule = { class = "MPlayer" },
-        properties = { floating = true } },
-      { rule = { class = "Guake" },
-        properties = { floating = true } },
-      { rule = { class = "pinentry" },
-        properties = { floating = true } },
-      { rule = { class = "gimp" },
-        properties = { floating = true } },
-      { rule = { class = "mathworks", name = "Figure" },
-        properties = { floating = true } },
-      -- { rule = { class = "Google-chrome" },
-      --   properties = { tag = tags[1][2] } },
-      { rule = { class = "Emacs" },
-        properties = { screen = 1, tag = "1" } },
-      { rule = { class = "Pidgin" },
-        properties = { screen = 1, tag = "4" } },
-      -- Set Firefox to always map on tags number 2 of screen 1.
-      { rule = { class = "Firefox" },
-        properties = { screen = 1, tag = "2" } },
-      { rule = { class = "google-chrome", name = "Hangouts" },
-        properties = { screen = 1, tag = "8", sticky = false, ontop=true, border_width = 0 } },
-      { rule = { class = "google-chrome", role = "pop-up" },
-        properties = { screen = 1, tag = "8", sticky = false, ontop=true, border_width = 0 } },
-   }
-else
-   awful.rules.rules = {
-      -- All clients will match this rule.
-      { rule = { },
-        properties = { border_width = beautiful.border_width,
-                       border_color = beautiful.border_normal,
-                       focus = awful.client.focus.filter,
-                       keys = clientkeys,
-                       buttons = clientbuttons } },
-      { rule = { class = "MPlayer" },
-        properties = { floating = true } },
-      { rule = { class = "Guake" },
-        properties = { floating = true } },
-      { rule = { class = "pinentry" },
-        properties = { floating = true } },
-      { rule = { class = "gimp" },
-        properties = { floating = true } },
-      { rule = { class = "mathworks", name = "Figure" },
-        properties = { floating = true } },
-      { rule = { class = "google-chrome" },
-        properties = { screen = 1, tag = "2" } },
-      { rule = { class = "Emacs" },
-        properties = { screen = 1, tag = "1" } },
-      { rule = { class = "Pidgin" },
-        properties = { screen = 1, tag = "4" } },
-      { rule = { class = "Firefox" },
-        properties = { screen = 2, tag = "1" } },
-      { rule = { class = "google-chrome", name = "Hangouts" },
-        properties = { screen = 1, tag = "8", sticky = false, ontop=true, border_width = 0 } },
-      -- { rule = { class = "google-chrome", role = "pop-up" },
-      --   properties = { tag = tags[1][8], sticky = false, ontop=true, border_width = 0 } },
 
-   }
+single_screen_rules = {
+   -- All clients will match this rule.
+   { rule = { },
+     properties = { border_width = beautiful.border_width,
+                    border_color = beautiful.border_normal,
+                    focus = awful.client.focus.filter,
+                    raise = true,
+                    keys = clientkeys,
+                    buttons = clientbuttons,
+                    placement = awful.placement.no_overlap+awful.placement.no_offscreen
+     }
+   },
+   { rule = { class = "MPlayer" },
+     properties = { floating = true } },
+   { rule = { class = "Guake" },
+     properties = { floating = true } },
+   { rule = { class = "pinentry" },
+     properties = { floating = true } },
+   { rule = { class = "gimp" },
+     properties = { floating = true } },
+   { rule = { class = "mathworks", name = "Figure" },
+     properties = { floating = true } },
+   { rule = { class = "Peek" },
+     properties = { floating = true, ontop = false, above = false } },
+   { rule = { class = "google-chrome" },
+     properties = { screen = 1, tag = "3" } },
+   { rule = { class = "Emacs" },
+     properties = { screen = 1, tag = "1" } },
+   { rule = { class = "Pidgin" },
+     properties = { screen = 1, tag = "4" } },
+   -- Set Firefox to always map on tags number 2 of screen 1.
+   { rule = { class = "Firefox" },
+     properties = { screen = 1, tag = "2" } },
+   { rule = { class = "google-chrome", name = "Hangouts" },
+     properties = { screen = 1, tag = "8", sticky = false, ontop=true, border_width = 0 } },
+   { rule = { class = "google-chrome", role = "pop-up" },
+     properties = { screen = 1, tag = "8", sticky = false, ontop=true, border_width = 0 } },
+}
+multi_screen_rules = {
+   -- All clients will match this rule.
+   { rule = { },
+     properties = { border_width = beautiful.border_width,
+                    border_color = beautiful.border_normal,
+                    focus = awful.client.focus.filter,
+                    keys = clientkeys,
+                    buttons = clientbuttons } },
+   { rule = { class = "MPlayer" },
+     properties = { floating = true } },
+   { rule = { class = "Guake" },
+     properties = { floating = true } },
+   { rule = { class = "pinentry" },
+     properties = { floating = true } },
+   { rule = { class = "gimp" },
+     properties = { floating = true } },
+   { rule = { class = "mathworks", name = "Figure" },
+     properties = { floating = true } },
+   { rule = { class = "Peek" },
+     properties = { floating = true, ontop = false, above = false } },
+   { rule = { class = "google-chrome" },
+     properties = { screen = 1, tag = "2" } },
+   { rule = { class = "Emacs" },
+     properties = { screen = 1, tag = "1" } },
+   { rule = { class = "Pidgin" },
+     properties = { screen = 1, tag = "4" } },
+   { rule = { class = "Firefox" },
+     properties = { screen = 2, tag = "1" } },
+   { rule = { class = "google-chrome", name = "Hangouts" },
+     properties = { screen = 1, tag = "8", sticky = false, ontop=true, border_width = 0 } },
+   -- { rule = { class = "google-chrome", role = "pop-up" },
+   --   properties = { tag = tags[1][8], sticky = false, ontop=true, border_width = 0 } },
 
+}
+
+choose_screen_rules = function(s)
+   print("Choosing rules based on screen count")
+   if screen.count() == 1 then
+      awful.rules.rules = single_screen_rules
+   else
+      awful.rules.rules = multi_screen_rules
+   end
 end
+
+reapply_rules = function()
+   print("Reapplying rules")
+   for c in awful.client.iterate(function(c) return true; end) do
+      awful.rules.apply(c)
+   end
+end
+
+
+screen_attached = function(s)
+   choose_screen_rules(s)
+   reapply_rules()
+end
+
+awful.screen.connect_for_each_screen(choose_screen_rules)
+
+choose_screen_rules()
+
+client.connect_signal("screen::added", screen_attached)
+client.connect_signal("screen::removed", screen_attached)
+
+screen.connect_signal("added", screen_attached)
+screen.connect_signal("removed", screen_attached)
+
+client.connect_signal("screen.added", screen_attached)
+client.connect_signal("screen.removed", screen_attached)
+
+client.connect_signal(".added", screen_attached)
+client.connect_signal(".removed", screen_attached)
 -- }}}
 
 -- {{{ Signals
