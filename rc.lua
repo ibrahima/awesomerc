@@ -11,7 +11,9 @@ local beautiful = require("beautiful")
 local naughty = require("naughty")
 local menubar = require("menubar")
 local hotkeys_popup = require("awful.hotkeys_popup").widget
+-- My customizations
 local gnome_helpers = require("gnome_helpers")
+local custom_keybindings = require("keybindings")
 -- Enable VIM help for hotkeys widget when client with matching name is opened:
 require("awful.hotkeys_popup.keys.vim")
 
@@ -126,7 +128,7 @@ mykeyboardlayout = awful.widget.keyboardlayout()
 
 -- {{{ Wibar
 -- Create a textclock widget
-mytextclock = wibox.widget.textclock()
+mytextclock = wibox.widget.textclock(" %a %b %d, %I:%M%p")
 
 -- Create a wibox for each screen and add it
 -- @TAGLIST_BUTTON@
@@ -392,7 +394,8 @@ clientkeys = gears.table.join(
             c.maximized_horizontal = not c.maximized_horizontal
             c:raise()
         end ,
-        {description = "(un)maximize horizontally", group = "client"})
+        {description = "(un)maximize horizontally", group = "client"}),
+    custom_keybindings
 )
 
 -- @DOC_NUMBER_KEYBINDINGS@
