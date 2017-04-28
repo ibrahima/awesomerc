@@ -14,6 +14,7 @@ local hotkeys_popup = require("awful.hotkeys_popup").widget
 -- My customizations
 local gnome_helpers = require("gnome_helpers")
 local custom_keybindings = require("keybindings")
+local widgets = require("widgets")
 -- Enable VIM help for hotkeys widget when client with matching name is opened:
 require("awful.hotkeys_popup.keys.vim")
 
@@ -232,6 +233,16 @@ awful.screen.connect_for_each_screen(function(s)
         s.mytasklist, -- Middle widget
         { -- Right widgets
             layout = wibox.layout.fixed.horizontal,
+            widgets.memwidget,
+            widgets.separator,
+            widgets.cpuwidget,
+            widgets.freq0,
+            widgets.freq1,
+            widgets.freq2,
+            widgets.freq3,
+            widgets.separator,
+            widgets.batwidget0,
+            widgets.batwidget1,
             mykeyboardlayout,
             wibox.widget.systray(),
             mytextclock,
@@ -276,7 +287,8 @@ globalkeys = gears.table.join(
     ),
     awful.key({ modkey,           }, "w", function () mymainmenu:show() end,
               {description = "show main menu", group = "awesome"}),
-
+    awful.key({ modkey, "Shift"   }, "w", function () awful.spawn("rofi -show") end,
+              {description = "show rofi menu", group = "awesome"}),
     -- Layout manipulation
     awful.key({ modkey, "Shift"   }, "j", function () awful.client.swap.byidx(  1)    end,
               {description = "swap with next client by index", group = "client"}),
