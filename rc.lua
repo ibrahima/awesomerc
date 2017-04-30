@@ -49,6 +49,9 @@ end
 -- Themes define colours, icons, font and wallpapers.
 beautiful.init(awful.util.get_themes_dir() .. "default/theme.lua")
 
+beautiful.tasklist_bg_focus = "#147D91"
+beautiful.tasklist_bg_normal = "#0A3C4A"
+
 beautiful.wallpaper = "/home/ibrahim/Pictures/mirror_lake.jpg"
 
 -- @DOC_DEFAULT_APPLICATIONS@
@@ -214,11 +217,23 @@ awful.screen.connect_for_each_screen(function(s)
     s.mytaglist = awful.widget.taglist(s, awful.widget.taglist.filter.all, taglist_buttons)
 
     -- Create a tasklist widget
-    s.mytasklist = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, tasklist_buttons)
+    s.mytasklist = awful.widget.tasklist(s,
+                                         awful.widget.tasklist.filter.currenttags,
+                                         tasklist_buttons,
+                                         {
+                                            bg_normal = "#0A3C4A",
+                                            bg_focus = "#147D91",
+                                            bg_urgent = "#de6868"
+                                         }
+    )
 
     -- @DOC_WIBAR@
     -- Create the wibox
-    s.mywibox = awful.wibar({ position = "top", screen = s })
+    s.mywibox = awful.wibar({
+          position = "top",
+          screen = s,
+          bg = "#062730"
+    })
 
     -- @DOC_SETUP_WIDGETS@
     -- Add widgets to the wibox
