@@ -54,6 +54,13 @@ beautiful.tasklist_bg_normal = "#0A3C4A"
 
 beautiful.wallpaper = "/home/ibrahim/Pictures/mirror_lake.jpg"
 
+-- notification themes
+beautiful.notification_bg = "#147D91"
+beautiful.notification_fg = "#eeeeee"
+beautiful.notification_font = "sans 14"
+beautiful.notification_shape = gears.shape.rounded_rect
+beautiful.notification_opacity = 0.8
+
 -- @DOC_DEFAULT_APPLICATIONS@
 -- This is used later as the default terminal and editor to run.
 terminal = "x-terminal-emulator"
