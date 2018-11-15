@@ -1,5 +1,6 @@
 local vicious = require("vicious")
 local awful = require("awful")
+local gears = require("gears")
 local beautiful = require("beautiful")
 local wibox = require("wibox")
 
@@ -79,6 +80,21 @@ battime1 = wibox.widget.textbox()
 vicious.register(battime0, vicious.widgets.bat, "($3)$1", 61, "BAT0")
 vicious.register(battime1, vicious.widgets.bat, "($3)$1", 61, "BAT1")
 
+-- Org mode current task widget
+orgtaskwidget = wibox.widget.textbox()
+
+updateorgtask = function()
+   f = io.open("/home/ibrahim/.current-task")
+   t = f:read("*line")
+   orgtaskwidget:set_text(string.sub(t, 1, 30))
+end
+
+updateorgtask()
+
+mytimer = gears.timer({ timeout = 30 })
+mytimer:connect_signal("timeout", updateorgtask)
+mytimer:start()
+
 local widgets = {
    separator = separator,
    cpuwidget = cpuwidget,
@@ -90,7 +106,8 @@ local widgets = {
    freq0 = freq0,
    freq1 = freq1,
    freq2 = freq2,
-   freq3 = freq3
+   freq3 = freq3,
+   orgtaskwidget = orgtaskwidget
 }
 
 return widgets
