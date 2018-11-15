@@ -51,7 +51,7 @@ beautiful.init(awful.util.get_themes_dir() .. "default/theme.lua")
 
 beautiful.tasklist_bg_focus = "#147D91"
 beautiful.tasklist_bg_normal = "#0A3C4A"
-
+beautiful.bg_systray = "#1e4d44"
 beautiful.wallpaper = "/home/ibrahim/Pictures/mirror_lake.jpg"
 
 -- notification themes
